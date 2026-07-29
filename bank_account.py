@@ -7,6 +7,8 @@ class BankAccount:
     def deposit(self, amount):
         if amount >= 0:
             self.balance += amount
+        else:
+            print("Amount must be positive")
 
     def withdraw(self, amount):
         if amount >= 0:
@@ -14,6 +16,8 @@ class BankAccount:
                 self.balance -= amount
             else:
                 print("Insufficient funds")
+        else:
+            print("Amount must be positive")
 
     def display_balance(self):
         print(f"Bank Account: {self.holder} - ${self.balance}")
