@@ -6,18 +6,31 @@ class NegativeAmountError(Exception):
     pass
 
 
+def audit_logger(func):
+    def wrapper(*args, **kwargs):
+        print(f"[AUDIT LOG] Executing {func.__name__}...")
+        result = func(*args, **kwargs)
+        print(f"[AUDIT LOG] {func.__name__} execution complete.")
+
+        return result
+
+    return wrapper
+
+
 class BankAccount:
     def __init__(self, account_holder, balance = 0.0):
         self.holder = account_holder
         self.__balance = balance
         print(f"Account Created: {self.holder} - ${self.__balance} | {id(self)}")
 
+    @audit_logger
     def deposit(self, amount):
         if amount < 0:
             raise NegativeAmountError("Cannot process negative amounts.")
         self.__balance += amount
         self.log_transaction("Deposited", amount)
 
+    @audit_logger
     def withdraw(self, amount):
         if amount < 0:
             raise NegativeAmountError("Cannot process negative amounts.")
@@ -55,29 +68,6 @@ class CheckingAccount(BankAccount):
         super().withdraw(amount + self.transaction_fee)
 
 
-my_account = BankAccount("Aditya Robust", 100)
-
-try:
-    print("Attempting to withdraw $200...")
-    my_account.withdraw(200) # This should trigger the exception
-    print("Withdrawal successful!") # This line will NEVER run
-    
-except InsufficientFundsError as e:
-    print(f"BANK ALERT: {e}")
-    
-except NegativeAmountError as e:
-    print(f"BANK ALERT: {e}")
-    
-except Exception as e:
-    # A generic catch-all for any other weird bugs we didn't foresee
-    print(f"CRITICAL SYSTEM FAILURE: {e}")
-
-print("Program continues running smoothly because we caught the error...")
-
-print("Depositing $50...")
-my_account.deposit(50)
-print("Deposit successful!")
-
-print("Withdrawing $20...")
-my_account.withdraw(20)
-print("Withdrawal successful")
+my_account = BankAccount("Aditya Decorator", 500)
+my_account.deposit(100)
+my_account.withdraw(50)
