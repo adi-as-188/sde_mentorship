@@ -1,3 +1,11 @@
+class InsufficientFundsError(Exception):
+    pass
+
+
+class NegativeAmountError(Exception):
+    pass
+
+
 class BankAccount:
     def __init__(self, account_holder, balance = 0.0):
         self.holder = account_holder
@@ -5,19 +13,16 @@ class BankAccount:
         print(f"Account Created: {self.holder} - ${self.__balance} | {id(self)}")
 
     def deposit(self, amount):
-        if amount >= 0:
-            self.__balance += amount
-        else:
-            print("Amount must be positive")
+        if amount < 0:
+            raise NegativeAmountError("Cannot process negative amounts.")
+        self.__balance += amount
 
     def withdraw(self, amount):
-        if amount >= 0:
-            if self.__balance >= amount:
-                self.__balance -= amount
-            else:
-                print("Insufficient funds")
-        else:
-            print("Amount must be positive")
+        if amount < 0:
+            raise NegativeAmountError("Cannot process negative amounts.")
+        if self.__balance < amount:
+            raise InsufficientFundsError("Not enough money in the account.")
+        self.__balance -= amount
 
     def get_balance(self):
         return self.__balance
@@ -44,11 +49,21 @@ class CheckingAccount(BankAccount):
         super().withdraw(amount + self.transaction_fee)
 
 
-# 1. Test Dunder Method
-my_account = BankAccount("Aditya Default", 500)
-print(my_account)
+my_account = BankAccount("Aditya Robust", 100)
 
-# 2. Test Checking Account Polymorphism
-my_checking = CheckingAccount("Aditya Checking", 100)
-my_checking.withdraw(20) # Withdrawing 20, but it should deduct 21!
-print(my_checking)
+try:
+    print("Attempting to withdraw $200...")
+    my_account.withdraw(200) # This should trigger the exception
+    print("Withdrawal successful!") # This line will NEVER run
+    
+except InsufficientFundsError as e:
+    print(f"BANK ALERT: {e}")
+    
+except NegativeAmountError as e:
+    print(f"BANK ALERT: {e}")
+    
+except Exception as e:
+    # A generic catch-all for any other weird bugs we didn't foresee
+    print(f"CRITICAL SYSTEM FAILURE: {e}")
+
+print("Program continues running smoothly because we caught the error...")
