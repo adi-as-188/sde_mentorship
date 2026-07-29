@@ -16,6 +16,7 @@ class BankAccount:
         if amount < 0:
             raise NegativeAmountError("Cannot process negative amounts.")
         self.__balance += amount
+        self.log_transaction("Deposited", amount)
 
     def withdraw(self, amount):
         if amount < 0:
@@ -23,12 +24,17 @@ class BankAccount:
         if self.__balance < amount:
             raise InsufficientFundsError("Not enough money in the account.")
         self.__balance -= amount
+        self.log_transaction("Withdrew", amount)
 
     def get_balance(self):
         return self.__balance
 
     def __str__(self):
         return f"Account[{self.holder}] - Balance: ${self.get_balance()}"
+
+    def log_transaction(self, action, amount):
+        with open(f"{self.holder}_ledger.txt", "a") as file:
+            file.write(f"{action}: ${amount} | New Balance: {self.get_balance()}\n")
 
 
 class SavingsAccount(BankAccount):
@@ -67,3 +73,11 @@ except Exception as e:
     print(f"CRITICAL SYSTEM FAILURE: {e}")
 
 print("Program continues running smoothly because we caught the error...")
+
+print("Depositing $50...")
+my_account.deposit(50)
+print("Deposit successful!")
+
+print("Withdrawing $20...")
+my_account.withdraw(20)
+print("Withdrawal successful")
