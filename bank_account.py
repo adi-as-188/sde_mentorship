@@ -19,11 +19,11 @@ class BankAccount:
         else:
             print("Amount must be positive")
 
-    def display_balance(self):
-        print(f"Bank Account: {self.holder} - ${self.__balance}")
-
     def get_balance(self):
         return self.__balance
+
+    def __str__(self):
+        return f"Account[{self.holder}] - Balance: ${self.get_balance()}"
 
 
 class SavingsAccount(BankAccount):
@@ -35,14 +35,20 @@ class SavingsAccount(BankAccount):
         self.deposit(self.get_balance() * self.interest_rate)
 
 
-# Create a Savings Account with 5% interest
-my_savings = SavingsAccount("Aditya", 1000, 0.05)
+class CheckingAccount(BankAccount):
+    def __init__(self, account_holder, balance=0, transaction_fee = 1.00):
+        super().__init__(account_holder, balance)
+        self.transaction_fee = transaction_fee
 
-# Display initial balance
-my_savings.display_balance()
+    def withdraw(self, amount):
+        super().withdraw(amount + self.transaction_fee)
 
-# Apply interest
-my_savings.apply_interest()
 
-# Display new balance (Should be 1050)
-my_savings.display_balance()
+# 1. Test Dunder Method
+my_account = BankAccount("Aditya Default", 500)
+print(my_account)
+
+# 2. Test Checking Account Polymorphism
+my_checking = CheckingAccount("Aditya Checking", 100)
+my_checking.withdraw(20) # Withdrawing 20, but it should deduct 21!
+print(my_checking)
