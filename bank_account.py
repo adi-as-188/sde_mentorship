@@ -26,10 +26,23 @@ class BankAccount:
         return self.__balance
 
 
-secure_account = BankAccount("Aditya", 500)
+class SavingsAccount(BankAccount):
+    def __init__(self, account_holder, balance=0, interest_rate=0.05):
+        super().__init__(account_holder, balance)
+        self.interest_rate = interest_rate
 
-# 1. Try to hack the bank (this will fail to change the actual balance)
-secure_account.__balance = 1000000
+    def apply_interest(self):
+        self.deposit(self.get_balance() * self.interest_rate)
 
-# 2. Print the REAL balance using your getter method
-print(f"Real Balance: {secure_account.get_balance()}")
+
+# Create a Savings Account with 5% interest
+my_savings = SavingsAccount("Aditya", 1000, 0.05)
+
+# Display initial balance
+my_savings.display_balance()
+
+# Apply interest
+my_savings.apply_interest()
+
+# Display new balance (Should be 1050)
+my_savings.display_balance()
