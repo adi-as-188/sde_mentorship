@@ -66,8 +66,3 @@ class CheckingAccount(BankAccount):
 
     def withdraw(self, amount):
         super().withdraw(amount + self.transaction_fee)
-
-
-my_account = BankAccount("Aditya Decorator", 500)
-my_account.deposit(100)
-my_account.withdraw(50)
